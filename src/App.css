@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css?family=Shrikhand&display=swap');
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #79a836;
+  background: radial-gradient(circle, rgba(121, 168, 54, 1) 0%, rgba(16, 12, 8, 1) 64%);
+  padding: 0;
+  margin: 0;
+}
+
+.header {
+  text-align: center;
+  font-family: 'Shrikhand', cursive;
+  margin-bottom: 0;
+}
+
+.header h1 {
+  font-size: 3em;
+  margin: 10px 0;
+  text-transform: uppercase;
+}
+
+.header h3 {
+  font-size: 1.5em;
+  margin: 10px 0;
+  text-transform: uppercase;
+}
+

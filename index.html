@@ -1,50 +1,13 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		 <meta charset="UTF-8">
-		<link type="text/css" rel="stylesheet" href="./style.css" />
-		<link rel="icon" href="img/logo.png"/>
-		<title>drain</title>
-	</head>
-	<body>
-		<div class="wrapper">
-			<h1>The Drain</h1>
-			<h3>A horror story</h3>
-			<div class="bash-border">
-				<div class="bash-box">
-					<div class="fight-log" id="fight-log">
-						<div id="no-log"></div>
-					</div>
-				</div>
-			</div>
-
-			<div id="startGame">
-				<button onclick="play();startCheck();">Start</button>
-				<button onclick="noIntro();lifeCheck()">Skip Intro</button>
-			</div>
-
-			<div id="inGame">
-				<div id="stats" class="stats">
-					<div class="stat" id="yourStats">
-						<p>Your Health:&nbsp</p>
-						<p class="digit" id="yourHealth">10</p>
-					</div>
-
-					<div class="stat" id="itStats">
-						<p>Its Health:&nbsp</p>
-						<p class="digit" id="itHealth">10</p>
-					</div>
-				</div>
-
-				<div id="buttons-fight">
-					<button onclick="fight();lifeCheck()">Fight the thing</button>
-					<button onclick="runAway();lifeCheck()">Run away</button>
-				</div>
-			</div>
-		</div>
-
-		<script src="scripts/setup.js"></script>
-		<script src="scripts/creatureFight.js"></script>
-
-	</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>The Drain</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
