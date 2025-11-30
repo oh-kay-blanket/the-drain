@@ -25,6 +25,39 @@ function gameReducer(state, action) {
         awaitingInput: allLinesTyped
       };
 
+    case 'SKIP_INTRO':
+      // Type out all remaining story segments very fast
+      const userSkipLine = {
+        id: `input-${Date.now()}`,
+        text: 'skip',
+        speed: 0,
+        isUserInput: true
+      };
+
+      const remainingStoryLines = storySegments
+        .slice(state.storyIndex)
+        .map((segment, i) => ({
+          id: `story-${state.storyIndex + i}`,
+          text: segment.text,
+          speed: 5 // Very fast typing
+        }));
+
+      const healthLine = {
+        id: `health-${Date.now()}`,
+        text: '',
+        speed: 0,
+        isHealthStats: true
+      };
+
+      return {
+        ...state,
+        phase: 'combat',
+        storyIndex: storySegments.length,
+        outputLines: [...state.outputLines, userSkipLine, ...remainingStoryLines, healthLine],
+        isTyping: true,
+        awaitingInput: false
+      };
+
     case 'ADVANCE_STORY':
       // Add user input echo
       const userInputLine = {
