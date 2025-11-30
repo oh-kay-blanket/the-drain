@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState } from 'react';
 import { TerminalOutput } from './TerminalOutput';
 import { OnScreenKeyboard } from './OnScreenKeyboard';
 import './Terminal.css';
@@ -13,15 +13,7 @@ export function TerminalContainer({
   creatureHealth,
   skipTyping
 }) {
-  const hiddenInputRef = useRef(null);
   const [currentInput, setCurrentInput] = useState('');
-
-  // Auto-focus hidden input for real keyboard support
-  useEffect(() => {
-    if (hiddenInputRef.current && !isTyping) {
-      hiddenInputRef.current.focus();
-    }
-  }, [isTyping, currentInput]);
 
   const handleKeyPress = (key) => {
     switch(key) {
@@ -43,20 +35,6 @@ export function TerminalContainer({
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onCommand(currentInput);
-    setCurrentInput('');
-  };
-
-  const handleRealKeyboardInput = (e) => {
-    if (isTyping) {
-      // Don't allow typing during animation, but keep input synced
-      e.target.value = currentInput;
-      return;
-    }
-    setCurrentInput(e.target.value);
-  };
 
   return (
     <div className="terminal-wrapper">
@@ -72,19 +50,6 @@ export function TerminalContainer({
               currentInput={currentInput}
               disabled={isTyping}
             />
-            {/* Hidden input for real keyboard support on mobile */}
-            <form onSubmit={handleSubmit} style={{ position: 'absolute', left: '-9999px' }}>
-              <input
-                ref={hiddenInputRef}
-                type="text"
-                value={currentInput}
-                onChange={handleRealKeyboardInput}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-              />
-            </form>
           </div>
         </div>
         <OnScreenKeyboard onKeyPress={handleKeyPress} disabled={isTyping} />

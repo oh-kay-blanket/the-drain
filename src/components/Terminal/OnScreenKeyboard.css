@@ -1,12 +1,23 @@
 .on-screen-keyboard {
   display: none; /* Hidden on desktop */
-  padding: 15px 10px 12px 10px;
-  background: linear-gradient(135deg, #c4b5a0 0%, #d4c5b0 50%, #c4b5a0 100%);
-  border-top: 1px solid #8b7d6b;
-  border-bottom: 2px solid #a39889;
+  padding: 6px 14px 14px;
+  /* background: linear-gradient(135deg, #c0b9ad 0%, #d0c9be 50%, #c0b9ad 100%); */
+  background: #d0c9be;
+  border-top: 1px solid #ede9e2;
+  border-bottom: 2px solid #afa8a0;
+  border-radius: 2px;
   box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.1),
-    inset 0 -1px 2px rgba(255,255,255,0.1);
+    /* Deep key well shadow */
+    0 6px 0 #9a9388,
+    0 7px 0 #8a8378,
+    0 8px 3px rgba(0,0,0,0.4),
+    /* Top highlight for rounded edge */
+    inset 0 2px 1px rgba(255,255,255,0.6),
+    /* Side shadows for depth */
+    inset -1px 0 1px rgba(0,0,0,0.15),
+    inset 1px 0 1px rgba(255,255,255,0.2),
+    /* Bottom shadow */
+    inset 0 -2px 2px rgba(0,0,0,0.1);
 }
 
 /* Show only on mobile */
@@ -24,23 +35,38 @@
   gap: 5px;
 }
 
-/* 80's style chunky keys - Beige retro look */
+/* 80's style chunky keys - Trapezoidal retro look */
 .key {
-  min-width: 28px;
-  height: 42px;
-  padding: 4px;
-  background: linear-gradient(180deg, #e8dcc8 0%, #d4c5b0 100%);
+  min-width: 32px;
+  height: 50px;
+  padding: 6px 10px;
+  flex: 1;
+  background: linear-gradient(180deg, #e0d9ce 0%, #d0c9be 50%, #c0b9ad 100%);
   border: none;
-  border-radius: 5px;
+  border-radius: 3px;
+  position: relative;
+
+  /* Create 3D trapezoid effect */
   box-shadow:
-    0 4px 0 #8b7d6b,
-    0 5px 3px rgba(0,0,0,0.3),
-    inset 0 1px 0 rgba(255,255,255,0.4),
-    inset 0 -1px 0 rgba(0,0,0,0.1);
+    /* Deep key well shadow */
+    0 6px 0 #9a9388,
+    0 7px 0 #8a8378,
+    0 8px 3px rgba(0,0,0,0.4),
+    /* Top highlight for rounded edge */
+    inset 0 2px 1px rgba(255,255,255,0.6),
+    /* Side shadows for depth */
+    inset -1px 0 1px rgba(0,0,0,0.15),
+    inset 1px 0 1px rgba(255,255,255,0.2),
+    /* Bottom shadow */
+    inset 0 -2px 2px rgba(0,0,0,0.1);
+
+  /* Create slanted sides */
+  transform: perspective(100px) rotateX(5deg);
+  transform-style: preserve-3d;
 
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: #2a2a2a;
   text-align: center;
   line-height: 1;
@@ -52,38 +78,31 @@
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 
-  transition: all 0.05s ease;
+  transition: all 0.08s ease;
 }
 
 .key:active {
-  transform: translateY(3px);
+  transform: perspective(100px) rotateX(5deg) translateY(6px);
   box-shadow:
-    0 1px 0 #8b7d6b,
-    0 2px 2px rgba(0,0,0,0.2),
-    inset 0 1px 0 rgba(255,255,255,0.3),
-    inset 0 -1px 0 rgba(0,0,0,0.1);
+    0 2px 0 #9a9388,
+    0 3px 2px rgba(0,0,0,0.3),
+    inset 0 1px 1px rgba(255,255,255,0.4),
+    inset 0 -1px 1px rgba(0,0,0,0.2);
 }
 
-/* Special keys (Backspace, Enter) - Same beige as other keys */
+/* Special keys (Backspace, Enter) - Same tall trapezoidal style */
 .key-special {
-  min-width: 48px;
-  background: linear-gradient(180deg, #e8dcc8 0%, #d4c5b0 100%);
+  min-width: 55px;
+  flex: 1.5;
+  background: linear-gradient(180deg, #e0d9ce 0%, #d0c9be 50%, #c0b9ad 100%);
   color: #2a2a2a;
-  font-size: 22px;
-  box-shadow:
-    0 4px 0 #8b7d6b,
-    0 5px 3px rgba(0,0,0,0.3),
-    inset 0 1px 0 rgba(255,255,255,0.4),
-    inset 0 -1px 0 rgba(0,0,0,0.1);
+  font-size: 16px;
+  font-weight: 700;
+  /* Inherit all the 3D trapezoid shadows from .key */
 }
 
 .key-special:active {
-  background: linear-gradient(180deg, #d4c5b0 0%, #c4b5a0 100%);
-  box-shadow:
-    0 1px 0 #8b7d6b,
-    0 2px 2px rgba(0,0,0,0.2),
-    inset 0 1px 0 rgba(255,255,255,0.3),
-    inset 0 -1px 0 rgba(0,0,0,0.1);
+  /* Inherit the pressed state from .key:active */
 }
 
 .key.disabled {
@@ -94,15 +113,17 @@
 
 /* Enter key - wider */
 .keyboard-row:last-child .key-special {
-  min-width: 65px;
+  min-width: 70px;
+  flex: 2;
 }
 
 /* Adjust key sizes for smaller screens */
 @media (max-width: 380px) {
   .key {
     min-width: 25px;
-    height: 38px;
+    height: 45px;
     font-size: 16px;
+    padding: 5px 6px;
   }
 
   .key-special {

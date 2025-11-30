@@ -12,8 +12,8 @@ export function OnScreenKeyboard({ onKeyPress, disabled }) {
   };
 
   const keyRows = [
-    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'BACKSPACE'],
-    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'BACKSPACE'],
     ['Z', 'X', 'C', 'V', 'B', 'N', 'M', 'ENTER']
   ];
 
@@ -29,7 +29,7 @@ export function OnScreenKeyboard({ onKeyPress, disabled }) {
               disabled={disabled}
               aria-label={key === 'BACKSPACE' ? 'Backspace' : key === 'ENTER' ? 'Enter' : key}
             >
-              {key === 'BACKSPACE' ? '⌫' : key === 'ENTER' ? '↵' : key}
+              {key === 'BACKSPACE' ? '⌫' : key === 'ENTER' ? 'ENTER' : key}
             </button>
           ))}
         </div>

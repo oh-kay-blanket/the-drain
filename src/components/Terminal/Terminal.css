@@ -13,20 +13,42 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #d4c5b0;
+  background-color: #969088;
+  gap:.25rem;
 }
 
 .bash-border {
-  background-color: linear-gradient(135deg, #c4b5a0 0%, #d4c5b0 50%, #c4b5a0 100%);
   margin: 0;
   padding: 10px;
+  background-color: #d0c9be;
+  box-shadow:
+    /* Deep key well shadow */
+    0 6px 0 #9a9388,
+    0 7px 0 #8a8378,
+    0 8px 3px rgba(0,0,0,0.4),
+    /* Top highlight for rounded edge */
+    inset 0 2px 1px rgba(255,255,255,0.6),
+    /* Side shadows for depth */
+    inset -1px 0 1px rgba(0,0,0,0.15),
+    inset 1px 0 1px rgba(255,255,255,0.2),
+    /* Bottom shadow */
+    inset 0 -2px 2px rgba(0,0,0,0.1);
+  border-radius: 3px;
   flex: 1;
   min-height: 0;
 }
 
 .bash-box {
   background-color: #222;
-  border: 3px solid #bbb;
+  /* border: 2px solid rgba(255,255,255,0.8),; */
+  box-shadow:
+    /* Top highlight for rounded edge */
+    inset 0 2px 1px rgba(255,255,255,.75),
+    /* Side shadows for depth */
+    inset -1px 0 1px rgba(255,255,255,.85),
+    inset 1px 0 1px rgba(255,255,255,.85),
+    /* Bottom shadow */
+    inset 0 -2px 1px rgba(255,255,255,0.85);
   border-radius: 25px;
   display: flex;
   flex-direction: column;
