@@ -6,15 +6,17 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
   const outputRef = useRef(null);
   const [completedLines, setCompletedLines] = useState(new Set());
 
-  // Auto-scroll to bottom when new content is added
+  // Auto-scroll to bottom when new content is added - only during typing
   useEffect(() => {
-    if (outputRef.current) {
+    if (disabled && outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
     }
-  }, [lines, currentInput, completedLines]);
+  }, [lines, currentInput, completedLines, disabled]);
 
-  // Additional auto-scroll during typing
+  // Additional auto-scroll during typing only
   useEffect(() => {
+    if (!disabled) return; // Don't auto-scroll when input is enabled
+
     const scrollInterval = setInterval(() => {
       if (outputRef.current) {
         outputRef.current.scrollTop = outputRef.current.scrollHeight;
@@ -22,7 +24,7 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
     }, 100); // Scroll every 100ms during typing
 
     return () => clearInterval(scrollInterval);
-  }, []);
+  }, [disabled]);
 
   // Track the line IDs to detect when we have a new set of lines
   const lineIdsRef = useRef('');
@@ -103,10 +105,12 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
         );
       })}
 
-      {/* Current input line inline with terminal output */}
-      <div className="terminal-line current-input">
-        # {currentInput}<span style={{ display: 'inline-block', minWidth: currentInput ? '0' : '0.6ch' }}></span><span className={`cursor ${disabled ? 'disabled' : ''}`}></span>
-      </div>
+      {/* Current input line inline with terminal output - only show when input enabled */}
+      {!disabled && (
+        <div className="terminal-line current-input">
+          # {currentInput}<span style={{ display: 'inline-block', minWidth: currentInput ? '0' : '0.6ch' }}></span><span className="cursor"></span>
+        </div>
+      )}
     </div>
   );
 }
