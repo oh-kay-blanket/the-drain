@@ -1,6 +1,6 @@
 .on-screen-keyboard {
   display: none; /* Hidden on desktop */
-  padding: 6px 14px 14px;
+  padding: 14px 14px 20px;
   /* background: linear-gradient(135deg, #c0b9ad 0%, #d0c9be 50%, #c0b9ad 100%); */
   background: #d0c9be;
   border-top: 1px solid #ede9e2;
