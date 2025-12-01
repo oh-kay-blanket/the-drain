@@ -5,9 +5,9 @@ export function OnScreenKeyboard({ onKeyPress, disabled }) {
     if (disabled) return;
     onKeyPress(key);
 
-    // Optional haptic feedback
+    // Optional haptic feedback - short, sharp "clack"
     if (navigator.vibrate) {
-      navigator.vibrate(10);
+      navigator.vibrate(3);
     }
   };
 
