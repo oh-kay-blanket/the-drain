@@ -27,8 +27,9 @@
     flex-direction: column;
     gap: 6px;
     flex-shrink: 0; /* Don't shrink keyboard */
-    max-height: 35vh; /* Ensure keyboard doesn't take too much space */
-    overflow: hidden; /* Prevent internal overflow */
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
+    box-sizing: border-box;
+    max-height: calc(30vh + env(safe-area-inset-bottom, 0) + 20px);
   }
 }
 
