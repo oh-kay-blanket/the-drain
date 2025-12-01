@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TerminalOutput } from './TerminalOutput';
 import { OnScreenKeyboard } from './OnScreenKeyboard';
 import './Terminal.css';
@@ -35,6 +35,30 @@ export function TerminalContainer({
     }
   };
 
+  // Handle physical keyboard events for desktop
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore if user is typing in an actual input field
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleKeyPress('ENTER');
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleKeyPress('BACKSPACE');
+      } else if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
+        e.preventDefault();
+        handleKeyPress(e.key.toUpperCase());
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentInput, isTyping]);
+
 
   return (
     <div className="terminal-wrapper">
@@ -44,8 +68,6 @@ export function TerminalContainer({
             <TerminalOutput
               lines={lines}
               onLineComplete={onLineComplete}
-              playerHealth={playerHealth}
-              creatureHealth={creatureHealth}
               skipTyping={skipTyping}
               currentInput={currentInput}
               disabled={isTyping}

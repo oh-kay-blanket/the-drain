@@ -1,8 +1,24 @@
 @import url('https://fonts.googleapis.com/css?family=Major+Mono+Display|Shrikhand&display=swap');
 
+/* Custom VT terminal fonts */
+@font-face {
+  font-family: 'Glass TTY VT220';
+  src: url('/Glass_TTY_VT220.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'VT52';
+  src: url('/vt52.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .terminal-wrapper {
   width: 100vw;
   height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height for mobile */
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -61,25 +77,21 @@
   padding: 15px;
   overflow-y: auto;
   overflow-x: hidden;
-  font-family: 'Major Mono Display', monospace;
-  text-transform: lowercase;
+  /* Test fonts - uncomment one to try:
+     Option 1: font-family: 'Glass TTY VT220', monospace;
+     Option 2: font-family: 'VT52', monospace;
+     Current: */
+  font-family: 'Glass TTY VT220', monospace;
+  /* text-transform: lowercase; */
   color: #81fc16;
   text-shadow: 0 0 5px rgba(129, 252, 22, 0.5);
-  scrollbar-width: thin;
-  scrollbar-color: #81fc16 #222;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
 .terminal-output::-webkit-scrollbar {
-  width: 8px;
-}
-
-.terminal-output::-webkit-scrollbar-track {
-  background: #222;
-}
-
-.terminal-output::-webkit-scrollbar-thumb {
-  background: #81fc16;
-  border-radius: 4px;
+  display: none;
 }
 
 .terminal-line {
@@ -209,21 +221,21 @@
   }
 
   .terminal-line {
-    font-size: 14px;
+    font-size: 18px;
   }
 }
 
 /* Tablet and Desktop styles */
 @media (min-width: 768px) {
   .terminal-output {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .terminal-line {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .terminal-input input {
-    font-size: 16px;
+    font-size: 18px;
   }
 }

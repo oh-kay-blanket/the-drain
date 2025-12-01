@@ -18,7 +18,11 @@ function gameReducer(state, action) {
   switch (action.type) {
     case 'TYPING_COMPLETE':
       // Check if all lines have completed typing
-      const allLinesTyped = action.lineId === state.outputLines[state.outputLines.length - 1]?.id;
+      // Find the last line that actually needs typing (not healthStats, not userInput)
+      const lastTypingLine = [...state.outputLines]
+        .reverse()
+        .find(line => !line.isHealthStats && !line.isUserInput);
+      const allLinesTyped = action.lineId === lastTypingLine?.id;
       return {
         ...state,
         isTyping: !allLinesTyped,
@@ -49,11 +53,17 @@ function gameReducer(state, action) {
         isHealthStats: true
       };
 
+      const combatInstructionLine = {
+        id: `combat-instruction-${Date.now()}`,
+        text: '["fight" to attack or "run" to flee]',
+        speed: 30
+      };
+
       return {
         ...state,
         phase: 'combat',
         storyIndex: storySegments.length,
-        outputLines: [...state.outputLines, userSkipLine, ...remainingStoryLines, healthLine],
+        outputLines: [...state.outputLines, userSkipLine, ...remainingStoryLines, healthLine, combatInstructionLine],
         isTyping: true,
         awaitingInput: false
       };
@@ -70,11 +80,16 @@ function gameReducer(state, action) {
       if (state.phase === 'welcome') {
         // Start the actual story
         const firstStoryLine = { id: `story-0`, ...storySegments[0] };
+        const instructionLine = {
+          id: `instruction-0`,
+          text: '[Enter to continue or "skip" to skip]',
+          speed: 30
+        };
         return {
           ...state,
           phase: 'intro',
           storyIndex: 1,
-          outputLines: [...state.outputLines, userInputLine, firstStoryLine],
+          outputLines: [...state.outputLines, userInputLine, firstStoryLine, instructionLine],
           isTyping: true,
           awaitingInput: false
         };
@@ -84,27 +99,38 @@ function gameReducer(state, action) {
         const newIndex = state.storyIndex + 1;
 
         if (newIndex >= storySegments.length) {
-          // Story complete, start combat - add health stats
+          // Story complete, start combat - add health stats and combat instruction
           const healthLine = {
             id: `health-${Date.now()}`,
             text: '',
             speed: 0,
             isHealthStats: true
           };
+          const combatInstructionLine = {
+            id: `combat-instruction-${Date.now()}`,
+            text: '["fight" to attack or "run" to flee]',
+            speed: 30
+          };
           return {
             ...state,
             phase: 'combat',
             storyIndex: newIndex,
-            outputLines: [...state.outputLines, userInputLine, nextLine, healthLine],
+            outputLines: [...state.outputLines, userInputLine, nextLine, healthLine, combatInstructionLine],
             isTyping: true,
             awaitingInput: false
           };
         }
 
+        const instructionLine = {
+          id: `instruction-${newIndex}`,
+          text: '[Enter to continue or "skip" to skip]',
+          speed: 30
+        };
+
         return {
           ...state,
           storyIndex: newIndex,
-          outputLines: [...state.outputLines, userInputLine, nextLine],
+          outputLines: [...state.outputLines, userInputLine, nextLine, instructionLine],
           isTyping: true,
           awaitingInput: false
         };
@@ -141,6 +167,11 @@ function gameReducer(state, action) {
       // Check for victory
       if (newCreatureHealth <= 0) {
         const victoryMsg = getVictoryMessage();
+        const resetInstruction = {
+          id: `reset-instruction-${Date.now()}`,
+          text: '["reset" to play again]',
+          speed: 30
+        };
         return {
           ...state,
           phase: 'ended',
@@ -150,7 +181,7 @@ function gameReducer(state, action) {
             id: `victory-${Date.now()}`,
             text: victoryMsg.message,
             speed: victoryMsg.speed
-          }],
+          }, resetInstruction],
           isTyping: true,
           awaitingInput: false,
           firstStrike: false
@@ -160,6 +191,11 @@ function gameReducer(state, action) {
       // Check for death (took second hit)
       if (newPlayerHealth <= 0) {
         const deathMsg = getDeathMessage();
+        const resetInstruction = {
+          id: `reset-instruction-${Date.now()}`,
+          text: '["reset" to try again]',
+          speed: 30
+        };
         return {
           ...state,
           phase: 'ended',
@@ -169,18 +205,24 @@ function gameReducer(state, action) {
             id: `death-${Date.now()}`,
             text: deathMsg.message,
             speed: deathMsg.speed
-          }],
+          }, resetInstruction],
           isTyping: true,
           awaitingInput: false,
           firstStrike: false
         };
       }
 
+      const combatInstruction = {
+        id: `combat-instruction-${Date.now()}`,
+        text: '["fight" to attack or "run" to flee]',
+        speed: 30
+      };
+
       return {
         ...state,
         creatureHealth: newCreatureHealth,
         playerHealth: newPlayerHealth,
-        outputLines: newLines,
+        outputLines: [...newLines, combatInstruction],
         isTyping: true,
         awaitingInput: false,
         firstStrike: false
@@ -198,6 +240,12 @@ function gameReducer(state, action) {
         isUserInput: true
       };
 
+      const resetInstruction = {
+        id: `reset-instruction-${Date.now()}`,
+        text: '["reset" to play again]',
+        speed: 30
+      };
+
       return {
         ...state,
         phase: 'ended',
@@ -206,7 +254,7 @@ function gameReducer(state, action) {
           id: `run-${Date.now()}`,
           text: outcome.message,
           speed: outcome.speed
-        }],
+        }, resetInstruction],
         isTyping: true,
         awaitingInput: false
       };

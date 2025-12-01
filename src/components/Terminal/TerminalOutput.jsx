@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { TypedLine } from './TypedLine';
 import './Terminal.css';
 
-export function TerminalOutput({ lines, onLineComplete, playerHealth, creatureHealth, skipTyping, currentInput, disabled }) {
+export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput, disabled }) {
   const outputRef = useRef(null);
   const [completedLines, setCompletedLines] = useState(new Set());
 
@@ -11,7 +11,18 @@ export function TerminalOutput({ lines, onLineComplete, playerHealth, creatureHe
     if (outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
     }
-  }, [lines, currentInput]);
+  }, [lines, currentInput, completedLines]);
+
+  // Additional auto-scroll during typing
+  useEffect(() => {
+    const scrollInterval = setInterval(() => {
+      if (outputRef.current) {
+        outputRef.current.scrollTop = outputRef.current.scrollHeight;
+      }
+    }, 100); // Scroll every 100ms during typing
+
+    return () => clearInterval(scrollInterval);
+  }, []);
 
   // Track the line IDs to detect when we have a new set of lines
   const lineIdsRef = useRef('');
@@ -27,12 +38,16 @@ export function TerminalOutput({ lines, onLineComplete, playerHealth, creatureHe
       const hasNewContent = lines.some(l => !oldIds.has(l.id));
 
       if (hasNewContent && lines.length !== completedLines.size) {
-        setCompletedLines(new Set());
+        // Keep completed lines that still exist in the new set
+        const preservedCompleted = new Set(
+          [...completedLines].filter(id => newIds.has(id))
+        );
+        setCompletedLines(preservedCompleted);
       }
 
       lineIdsRef.current = currentLineIds;
     }
-  }, [lines, completedLines.size]);
+  }, [lines, completedLines]);
 
   const handleLineComplete = (lineId) => {
     setCompletedLines(prev => new Set([...prev, lineId]));
@@ -51,20 +66,24 @@ export function TerminalOutput({ lines, onLineComplete, playerHealth, creatureHe
           );
         }
 
-        // Health stats line
+        // Health stats line - removed, skip rendering
         if (line.isHealthStats) {
-          return (
-            <div key={line.id} className="health-stats-inline">
-              <p className="terminal-line">
-                # your health: <span style={{ color: getHealthColor(playerHealth) }}>{playerHealth}</span> | its health: <span style={{ color: getHealthColor(creatureHealth) }}>{creatureHealth}</span>
-              </p>
-            </div>
-          );
+          return null;
         }
 
         // Check if previous line is completed (or doesn't need typing)
-        const prevLine = lines[index - 1];
-        const shouldWait = prevLine && !prevLine.isUserInput && !prevLine.isHealthStats && !completedLines.has(prevLine.id);
+        // Need to find the previous non-healthStats, non-userInput line
+        let prevLineIndex = index - 1;
+        let prevLine = null;
+        while (prevLineIndex >= 0) {
+          const candidate = lines[prevLineIndex];
+          if (!candidate.isHealthStats && !candidate.isUserInput) {
+            prevLine = candidate;
+            break;
+          }
+          prevLineIndex--;
+        }
+        const shouldWait = prevLine && !completedLines.has(prevLine.id);
 
         // If waiting for previous line, show nothing yet
         if (shouldWait) {
@@ -92,8 +111,3 @@ export function TerminalOutput({ lines, onLineComplete, playerHealth, creatureHe
   );
 }
 
-function getHealthColor(health) {
-  if (health >= 10) return '#81fc16'; // green
-  if (health >= 5) return '#e2b100'; // yellow
-  return '#e00000'; // red
-}

@@ -18,5 +18,5 @@ export const welcomeMessage = [
   { text: "The Drain", speed: 60 },
   { text: "A horror story", speed: 60 },
   { text: "", speed: 0 },
-  { text: "Press Enter to begin...", speed: 50 }
+  { text: "[Enter to begin]", speed: 50 }
 ];

@@ -1,11 +1,11 @@
 // Combat logic ported from creatureFight.js
 const bodyParts = [
-  "slash it through its eyes",
-  "chop off a leg",
-  "stick the knife into its head",
-  "smack the thing with your lid",
-  "jam the blade in its mouth",
-  "dig the knife into its abdomen"
+  "You jab the blade into a cluster of eyes. It shrieks and recoils. A slick, oil-like substance is dripping from the wound.",
+  "You slash at a leg and manage to hack it clean off. It appears to look down at the still-twitching limb, then back at you. It hisses and sets into a sinister crouch.",
+  "You swing widly and the blade manages to nick the top of the creatures head. It sways, seeming to have lost its balance.",
+  "The creature lunges at you. You are able to deflect it with the pot lid and send it crashing into the drying rack.",
+  "It opens its maws and you quickly stick the short blade deep into its mouth before cleanly retracting it, unharmed. The creature halts for a moment and lets out a gurgling hiss.",
+  "The thing leaps into the air with it's legs outstretched, ready to wrap around your head. You gracefully dodge and manage poke the blade into its soft underside while in mid-air. It skitters into the corner, leaving a trail of sticky black ooze behind it."
 ];
 
 export function calculateFightOutcome(firstStrike) {
@@ -19,7 +19,7 @@ export function calculateFightOutcome(firstStrike) {
       playerHit: true,
       creatureDamage: damage,
       playerDamage: 0,
-      message: `You ${bodyParts[bodyPartIndex]} and do ${damage} damage.`,
+      message: `${bodyParts[bodyPartIndex]}`,
       speed: 40
     };
   } else {
@@ -30,7 +30,7 @@ export function calculateFightOutcome(firstStrike) {
         playerHit: false,
         creatureDamage: 0,
         playerDamage: creatureDamage,
-        message: `You go for a stab, but it pierces its foaming fangs through your hand and does ${creatureDamage} damage. The wound is incredibly painful and you are beginning to feel a tingling sensation up the length of your arm. Will you continue to fight or run away?`,
+        message: `You go for a stab, but it pierces its foaming fangs through your hand. The wound is incredibly painful and you are beginning to feel a tingling sensation up the length of your arm. Will you continue to fight or run away?`,
         speed: 50
       };
     } else {
@@ -38,7 +38,7 @@ export function calculateFightOutcome(firstStrike) {
         playerHit: false,
         creatureDamage: 0,
         playerDamage: creatureDamage,
-        message: `You go to strike, but from its abdomen it sprays a noxious fluid into your eyes and does ${creatureDamage} damage. Your vision now has trails and you've lost your sense of balance.`,
+        message: `You go to strike, but from its abdomen it sprays a noxious fluid into your eyes. Your vision now has trails and you've lost your sense of balance.`,
         speed: 50
       };
     }
