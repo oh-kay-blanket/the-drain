@@ -105,7 +105,7 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
 
       {/* Current input line inline with terminal output */}
       <div className="terminal-line current-input">
-        # {currentInput}<span className={`cursor ${disabled ? 'disabled' : ''}`}></span>
+        # {currentInput}<span style={{ display: 'inline-block', minWidth: currentInput ? '0' : '0.6ch' }}></span><span className={`cursor ${disabled ? 'disabled' : ''}`}></span>
       </div>
     </div>
   );

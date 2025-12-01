@@ -162,6 +162,7 @@
   width: 10px;
   height: 1.2em;
   background: #81fc16;
+  opacity: 0.4;
   margin-left: 2px;
   animation: blink 1s infinite;
 }
@@ -172,7 +173,7 @@
 }
 
 @keyframes blink {
-  0%, 49% { opacity: 1; }
+  0%, 49% { opacity: 0.5; }
   50%, 100% { opacity: 0; }
 }
 
