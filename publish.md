@@ -1,16 +1,23 @@
-# Push changes and deploy to GitHub Pages
+# Commit, push, and deploy to GitHub Pages
 
 This command will:
-1. Add all changes to git
-2. Commit with a descriptive message
-3. Push to the remote repository
-4. Deploy to GitHub Pages
+1. Check git status to see what changes exist
+2. Add all changes to git staging
+3. Commit with an auto-generated descriptive message
+4. Push to the remote repository
+5. Deploy to GitHub Pages
 
-First, check git status and create a commit:
+First, check what changes we have:
 
 ```bash
 git status
 ```
+
+```bash
+git diff --stat
+```
+
+Add and commit all changes:
 
 ```bash
 git add .
@@ -18,11 +25,7 @@ git add .
 
 ```bash
 git commit -m "$(cat <<'EOF'
-Fix mobile layout gap and keyboard cutoff
-
-- Remove vertical centering in App.css to eliminate gap above terminal
-- Terminal now properly fills viewport from top to bottom
-- Fixes keyboard cutoff issue on mobile Chrome with bottom address bar
+Update project files
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
@@ -31,18 +34,20 @@ EOF
 )"
 ```
 
+Push to remote:
+
 ```bash
 git push
 ```
 
-Now deploy to GitHub Pages:
+Deploy to GitHub Pages:
 
 ```bash
 npm run deploy
 ```
 
-Check deployment status:
+Confirm deployment:
 
 ```bash
-echo "Deployment complete! Check https://drain.ohkayblanket.com"
+echo "✅ Published successfully! Live at: https://drain.ohkayblanket.com"
 ```
