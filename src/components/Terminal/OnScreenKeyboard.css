@@ -26,6 +26,9 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex-shrink: 0; /* Don't shrink keyboard */
+    max-height: 35vh; /* Ensure keyboard doesn't take too much space */
+    overflow: hidden; /* Prevent internal overflow */
   }
 }
 

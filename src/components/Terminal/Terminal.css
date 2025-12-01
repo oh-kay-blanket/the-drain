@@ -17,20 +17,25 @@
 
 .terminal-wrapper {
   width: 100vw;
-  height: 100vh;
-  height: 100dvh; /* Use dynamic viewport height for mobile */
+  height: 100vh; /* Fallback for browsers without dvh */
+  height: 100svh; /* Small viewport height - excludes browser UI */
+  height: 100dvh; /* Dynamic viewport height - most compatible modern option */
   margin: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Prevent any overflow */
+  padding-bottom: env(safe-area-inset-bottom); /* Safe area support for notched devices */
 }
 
 .terminal-with-keyboard {
   width: 100%;
   height: 100%;
+  max-height: 100%; /* Never exceed parent height */
   display: flex;
   flex-direction: column;
   background-color: #969088;
   gap:.25rem;
+  overflow: hidden; /* Prevent overflow */
 }
 
 .bash-border {
