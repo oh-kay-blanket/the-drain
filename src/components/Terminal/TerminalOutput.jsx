@@ -101,15 +101,15 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
           return null;
         }
 
-        // Regular typed line - only pass skipTyping to the last typing line
-        const isLastLine = index === lines.length - 1;
+        // Regular typed line - pass skipTyping to any line not yet completed
+        const isCompleted = completedLines.has(line.id);
         return (
           <TypedLine
             key={line.id}
             text={line.text}
             speed={line.speed}
             onComplete={() => handleLineComplete(line.id)}
-            skipTrigger={isLastLine ? skipTyping : 0}
+            skipTrigger={isCompleted ? 0 : skipTyping}
           />
         );
       })}

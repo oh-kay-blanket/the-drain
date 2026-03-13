@@ -25,7 +25,6 @@ export function useTypingEffect(text, speed, onComplete, skipTrigger = 0) {
   useEffect(() => {
     if (skipTrigger !== prevSkipTrigger.current && skipTrigger > 0 && currentIndex < text.length) {
       // Skip to end
-      console.log('Skipping typing:', { skipTrigger, prevSkipTrigger: prevSkipTrigger.current, currentIndex, textLength: text.length });
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }

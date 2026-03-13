@@ -2,7 +2,7 @@ import './OnScreenKeyboard.css';
 
 export function OnScreenKeyboard({ onKeyPress, disabled }) {
   const handleKeyPress = (key) => {
-    if (disabled) return;
+    if (disabled && key !== 'ENTER') return;
     onKeyPress(key);
 
     // Optional haptic feedback - short, sharp "clack"
@@ -25,9 +25,9 @@ export function OnScreenKeyboard({ onKeyPress, disabled }) {
           {row.map(key => (
             <button
               key={key}
-              className={`key ${key.length > 1 ? 'key-special' : ''} ${disabled ? 'disabled' : ''}`}
+              className={`key ${key.length > 1 ? 'key-special' : ''} ${disabled && key !== 'ENTER' ? 'disabled' : ''}`}
               onClick={() => handleKeyPress(key)}
-              disabled={disabled}
+              disabled={disabled && key !== 'ENTER'}
               aria-label={key === 'BACKSPACE' ? 'Backspace' : key === 'ENTER' ? 'Enter' : key}
             >
               {key === 'BACKSPACE' ? '⌫' : key === 'ENTER' ? 'ENTER' : key}
