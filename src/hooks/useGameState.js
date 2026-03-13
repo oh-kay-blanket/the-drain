@@ -1,24 +1,76 @@
 import { useReducer } from 'react';
-import { storySegments, welcomeMessage } from '../data/story';
-import { calculateFightOutcome, calculateRunOutcome, getVictoryMessage, getDeathMessage } from '../data/combat';
+import { welcomeMessage } from '../data/story';
+import { storyTree } from '../data/storyTree';
 
 const initialState = {
-  phase: 'welcome', // 'welcome' | 'intro' | 'combat' | 'ended'
-  storyIndex: 0,
-  creatureHealth: 10,
-  playerHealth: 10,
+  phase: 'welcome', // 'welcome' | 'story' | 'ended'
+  currentNode: 'start',
   outputLines: welcomeMessage.map((line, i) => ({ id: `welcome-${i}`, ...line })),
   isTyping: true,
   awaitingInput: false,
-  firstStrike: true,
-  skipTyping: 0 // Counter to trigger skip
+  skipTyping: 0
 };
+
+function getNodeLines(node, nodeId, timestamp) {
+  const lines = [];
+
+  // Main story text
+  if (node.text) {
+    lines.push({
+      id: `story-${nodeId}-${timestamp}`,
+      text: node.text,
+      speed: node.speed
+    });
+  }
+
+  // If this is an ending node, show the ending title and reset instruction
+  if (node.ending) {
+    lines.push({
+      id: `ending-title-${timestamp}`,
+      text: `— ${node.ending.title} —`,
+      speed: 25
+    });
+    lines.push({
+      id: `reset-instruction-${timestamp}`,
+      text: '["reset" to play again]',
+      speed: 18
+    });
+  }
+  // If this has choices, show each as its own line
+  else if (node.choices) {
+    node.choices.forEach((c, i) => {
+      lines.push({
+        id: `choice-${nodeId}-${i}-${timestamp}`,
+        text: `${i + 1}. ${c.text}`,
+        speed: 12
+      });
+    });
+  }
+  // If this has a combat moment, show the action text
+  else if (node.combat) {
+    // Combat resolves automatically — no prompt needed, but we show a
+    // "press Enter" hint since the outcome appears on CONTINUE
+    lines.push({
+      id: `combat-hint-${timestamp}`,
+      text: '[Enter to continue]',
+      speed: 18
+    });
+  }
+  // If this is a linear node with next, show continue prompt
+  else if (node.next) {
+    lines.push({
+      id: `continue-${nodeId}-${timestamp}`,
+      text: '[Enter to continue]',
+      speed: 18
+    });
+  }
+
+  return lines;
+}
 
 function gameReducer(state, action) {
   switch (action.type) {
-    case 'TYPING_COMPLETE':
-      // Check if all lines have completed typing
-      // Find the last line that actually needs typing (not healthStats, not userInput)
+    case 'TYPING_COMPLETE': {
       const lastTypingLine = [...state.outputLines]
         .reverse()
         .find(line => !line.isHealthStats && !line.isUserInput && !line.isArt);
@@ -28,48 +80,9 @@ function gameReducer(state, action) {
         isTyping: !allLinesTyped,
         awaitingInput: allLinesTyped
       };
+    }
 
-    case 'SKIP_INTRO':
-      // Type out all remaining story segments very fast
-      const userSkipLine = {
-        id: `input-${Date.now()}`,
-        text: 'skip',
-        speed: 0,
-        isUserInput: true
-      };
-
-      const remainingStoryLines = storySegments
-        .slice(state.storyIndex)
-        .map((segment, i) => ({
-          id: `story-${state.storyIndex + i}`,
-          text: segment.text,
-          speed: 5 // Very fast typing
-        }));
-
-      const healthLine = {
-        id: `health-${Date.now()}`,
-        text: '',
-        speed: 0,
-        isHealthStats: true
-      };
-
-      const combatInstructionLine = {
-        id: `combat-instruction-${Date.now()}`,
-        text: '["fight" to attack or "run" to flee]',
-        speed: 18
-      };
-
-      return {
-        ...state,
-        phase: 'combat',
-        storyIndex: storySegments.length,
-        outputLines: [...state.outputLines, userSkipLine, ...remainingStoryLines, healthLine, combatInstructionLine],
-        isTyping: true,
-        awaitingInput: false
-      };
-
-    case 'ADVANCE_STORY':
-      // Add user input echo
+    case 'ADVANCE_STORY': {
       const userInputLine = {
         id: `input-${Date.now()}`,
         text: action.userInput || '',
@@ -78,183 +91,111 @@ function gameReducer(state, action) {
       };
 
       if (state.phase === 'welcome') {
-        // Start the actual story
-        const firstStoryLine = { id: `story-0`, ...storySegments[0] };
-        const instructionLine = {
-          id: `instruction-0`,
-          text: '[Enter to continue or "skip" to skip]',
-          speed: 18
-        };
-        return {
-          ...state,
-          phase: 'intro',
-          storyIndex: 1,
-          outputLines: [...state.outputLines, userInputLine, firstStoryLine, instructionLine],
-          isTyping: true,
-          awaitingInput: false
-        };
-      } else if (state.phase === 'intro' && state.storyIndex < storySegments.length) {
-        // Continue story
-        const nextLine = { id: `story-${state.storyIndex}`, ...storySegments[state.storyIndex] };
-        const newIndex = state.storyIndex + 1;
-
-        if (newIndex >= storySegments.length) {
-          // Story complete, start combat - add health stats and combat instruction
-          const healthLine = {
-            id: `health-${Date.now()}`,
-            text: '',
-            speed: 0,
-            isHealthStats: true
-          };
-          const combatInstructionLine = {
-            id: `combat-instruction-${Date.now()}`,
-            text: '["fight" to attack or "run" to flee]',
-            speed: 18
-          };
-          return {
-            ...state,
-            phase: 'combat',
-            storyIndex: newIndex,
-            outputLines: [...state.outputLines, userInputLine, nextLine, healthLine, combatInstructionLine],
-            isTyping: true,
-            awaitingInput: false
-          };
-        }
-
-        const instructionLine = {
-          id: `instruction-${newIndex}`,
-          text: '[Enter to continue or "skip" to skip]',
-          speed: 18
-        };
+        const ts = Date.now();
+        const node = storyTree['start'];
+        const nodeLines = getNodeLines(node, 'start', ts);
 
         return {
           ...state,
-          storyIndex: newIndex,
-          outputLines: [...state.outputLines, userInputLine, nextLine, instructionLine],
+          phase: 'story',
+          currentNode: 'start',
+          outputLines: [...state.outputLines, userInputLine, ...nodeLines],
           isTyping: true,
           awaitingInput: false
         };
       }
       return state;
-
-    case 'FIGHT': {
-      const outcome = calculateFightOutcome(state.firstStrike);
-      const newCreatureHealth = Math.max(0, state.creatureHealth - outcome.creatureDamage);
-      const newPlayerHealth = Math.max(0, state.playerHealth - outcome.playerDamage);
-
-      const userInput = {
-        id: `input-${Date.now()}`,
-        text: action.userInput || 'fight',
-        speed: 0,
-        isUserInput: true
-      };
-
-      const combatResult = {
-        id: `combat-${Date.now()}`,
-        text: outcome.message,
-        speed: outcome.speed
-      };
-
-      const healthUpdate = {
-        id: `health-${Date.now() + 1}`,
-        text: '',
-        speed: 0,
-        isHealthStats: true
-      };
-
-      const newLines = [...state.outputLines, userInput, combatResult, healthUpdate];
-
-      // Check for victory
-      if (newCreatureHealth <= 0) {
-        const victoryMsg = getVictoryMessage();
-        const resetInstruction = {
-          id: `reset-instruction-${Date.now()}`,
-          text: '["reset" to play again]',
-          speed: 18
-        };
-        return {
-          ...state,
-          phase: 'ended',
-          creatureHealth: 0,
-          playerHealth: newPlayerHealth,
-          outputLines: [...newLines, {
-            id: `victory-${Date.now()}`,
-            text: victoryMsg.message,
-            speed: victoryMsg.speed
-          }, resetInstruction],
-          isTyping: true,
-          awaitingInput: false,
-          firstStrike: false
-        };
-      }
-
-      // Check for death (took second hit)
-      if (newPlayerHealth <= 0) {
-        const deathMsg = getDeathMessage();
-        const resetInstruction = {
-          id: `reset-instruction-${Date.now()}`,
-          text: '["reset" to try again]',
-          speed: 18
-        };
-        return {
-          ...state,
-          phase: 'ended',
-          creatureHealth: newCreatureHealth,
-          playerHealth: 0,
-          outputLines: [...newLines, {
-            id: `death-${Date.now()}`,
-            text: deathMsg.message,
-            speed: deathMsg.speed
-          }, resetInstruction],
-          isTyping: true,
-          awaitingInput: false,
-          firstStrike: false
-        };
-      }
-
-      const combatInstruction = {
-        id: `combat-instruction-${Date.now()}`,
-        text: '["fight" to attack or "run" to flee]',
-        speed: 18
-      };
-
-      return {
-        ...state,
-        creatureHealth: newCreatureHealth,
-        playerHealth: newPlayerHealth,
-        outputLines: [...newLines, combatInstruction],
-        isTyping: true,
-        awaitingInput: false,
-        firstStrike: false
-      };
     }
 
-    case 'RUN': {
-      const outcome = calculateRunOutcome();
-      const newPlayerHealth = Math.max(0, state.playerHealth - outcome.playerDamage);
-
-      const userInput = {
+    case 'CONTINUE': {
+      const userInputLine = {
         id: `input-${Date.now()}`,
-        text: action.userInput || 'run',
+        text: action.userInput || '',
         speed: 0,
         isUserInput: true
       };
 
-      const resetInstruction = {
-        id: `reset-instruction-${Date.now()}`,
-        text: '["reset" to play again]',
-        speed: 18
+      const currentNode = storyTree[state.currentNode];
+      if (!currentNode) return state;
+
+      const ts = Date.now();
+
+      // Combat node — resolve RNG
+      if (currentNode.combat) {
+        const roll = Math.random();
+        const hit = roll < currentNode.combat.hitChance;
+        const resultText = hit ? currentNode.combat.hitText : currentNode.combat.missText;
+        const nextId = hit ? currentNode.combat.hitNext : currentNode.combat.missNext;
+        const nextNode = storyTree[nextId];
+
+        // Build lines: combat result text
+        const combatLines = [{
+          id: `combat-result-${ts}`,
+          text: resultText,
+          speed: 28
+        }];
+
+        // Then show the next node (which may be an ending or have further content)
+        if (nextNode) {
+          combatLines.push(...getNodeLines(nextNode, nextId, ts + 1));
+        }
+
+        return {
+          ...state,
+          phase: nextNode?.ending ? 'ended' : 'story',
+          currentNode: nextId,
+          outputLines: [...state.outputLines, userInputLine, ...combatLines],
+          isTyping: true,
+          awaitingInput: false
+        };
+      }
+
+      // Linear node — advance to next
+      if (currentNode.next) {
+        const nextId = currentNode.next;
+        const nextNode = storyTree[nextId];
+        if (!nextNode) return state;
+
+        const nodeLines = getNodeLines(nextNode, nextId, ts);
+        return {
+          ...state,
+          phase: nextNode.ending ? 'ended' : 'story',
+          currentNode: nextId,
+          outputLines: [...state.outputLines, userInputLine, ...nodeLines],
+          isTyping: true,
+          awaitingInput: false
+        };
+      }
+
+      return state;
+    }
+
+    case 'CHOOSE': {
+      const userInputLine = {
+        id: `input-${Date.now()}`,
+        text: action.userInput || '',
+        speed: 0,
+        isUserInput: true
       };
+
+      const currentNode = storyTree[state.currentNode];
+      if (!currentNode?.choices) return state;
+
+      const choiceIndex = action.choiceIndex;
+      if (choiceIndex < 0 || choiceIndex >= currentNode.choices.length) return state;
+
+      const nextId = currentNode.choices[choiceIndex].next;
+      const nextNode = storyTree[nextId];
+      if (!nextNode) return state;
+
+      const ts = Date.now();
+      const nodeLines = getNodeLines(nextNode, nextId, ts);
 
       return {
         ...state,
-        phase: 'ended',
-        playerHealth: newPlayerHealth,
-        outputLines: [...state.outputLines, userInput, {
-          id: `run-${Date.now()}`,
-          text: outcome.message,
-          speed: outcome.speed
-        }, resetInstruction],
+        phase: nextNode.ending ? 'ended' : 'story',
+        currentNode: nextId,
+        outputLines: [...state.outputLines, userInputLine, ...nodeLines],
         isTyping: true,
         awaitingInput: false
       };
@@ -290,11 +231,29 @@ function gameReducer(state, action) {
         skipTyping: state.skipTyping + 1
       };
 
-    case 'RESET':
+    case 'RESET': {
+      // Save ending title to localStorage for tracking
+      const currentNode = storyTree[state.currentNode];
+      if (currentNode?.ending) {
+        try {
+          const endings = JSON.parse(localStorage.getItem('drain_endings') || '[]');
+          if (!endings.includes(currentNode.ending.title)) {
+            endings.push(currentNode.ending.title);
+            localStorage.setItem('drain_endings', JSON.stringify(endings));
+          }
+        } catch {
+          // localStorage not available, ignore
+        }
+      }
+
       return {
         ...initialState,
-        outputLines: initialState.outputLines.map((line, i) => ({ ...line, id: `welcome-${i}-${Date.now()}` }))
+        outputLines: initialState.outputLines.map((line, i) => ({
+          ...line,
+          id: `welcome-${i}-${Date.now()}`
+        }))
       };
+    }
 
     default:
       return state;

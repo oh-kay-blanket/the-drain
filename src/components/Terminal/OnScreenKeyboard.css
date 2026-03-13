@@ -40,10 +40,10 @@
 
 /* 80's style chunky keys - Trapezoidal retro look */
 .key {
-  min-width: 32px;
+  width: calc((100% - 9 * 5px) / 10);
+  flex: 0 0 auto;
   height: 50px;
-  padding: 6px 10px;
-  flex: 1;
+  padding: 6px 0;
   background: linear-gradient(180deg, #e0d9ce 0%, #d0c9be 50%, #c0b9ad 100%);
   border: none;
   border-radius: 3px;
@@ -96,13 +96,12 @@
 
 /* Special keys (Backspace, Enter) - Same tall trapezoidal style */
 .key-special {
-  min-width: 55px;
-  flex: 1.5;
+  width: auto;
+  flex: 1 1 auto;
   background: linear-gradient(180deg, #e0d9ce 0%, #d0c9be 50%, #c0b9ad 100%);
   color: #2a2a2a;
   font-size: 16px;
   font-weight: 700;
-  /* Inherit all the 3D trapezoid shadows from .key */
 }
 
 .key-special:active {
@@ -115,28 +114,23 @@
   pointer-events: none;
 }
 
-/* Enter key - wider */
+/* Special keys on bottom row */
 .keyboard-row:last-child .key-special {
-  min-width: 70px;
-  flex: 2;
+  width: auto;
+  flex: 1 1 auto;
 }
 
 /* Adjust key sizes for smaller screens */
 @media (max-width: 380px) {
   .key {
-    min-width: 25px;
+    width: calc((100% - 9 * 4px) / 10);
     height: 45px;
     font-size: 16px;
-    padding: 5px 6px;
+    padding: 5px 0;
   }
 
   .key-special {
-    min-width: 42px;
-    font-size: 18px;
-  }
-
-  .keyboard-row:last-child .key-special {
-    min-width: 58px;
+    font-size: 14px;
   }
 
   .keyboard-row {

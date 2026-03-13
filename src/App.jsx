@@ -11,30 +11,23 @@ function App() {
   };
 
   const handleCommand = (input) => {
-    // Check for "skip" command during intro
-    if (state.phase === 'intro' && input.trim().toLowerCase() === 'skip') {
-      dispatch({ type: 'SKIP_INTRO' });
-      return;
-    }
-
     // If currently typing, skip to end of current line
     if (state.isTyping) {
-      console.log('Skipping - isTyping:', state.isTyping, 'skipTyping:', state.skipTyping);
       dispatch({ type: 'SKIP_TYPING' });
       return;
     }
 
-    const command = parseCommand(input, state.phase);
+    const command = parseCommand(input, state.phase, state.currentNode);
 
     switch (command.type) {
       case 'ADVANCE_STORY':
         dispatch({ type: 'ADVANCE_STORY', userInput: input });
         break;
-      case 'FIGHT':
-        dispatch({ type: 'FIGHT', userInput: input });
+      case 'CHOOSE':
+        dispatch({ type: 'CHOOSE', choiceIndex: command.choiceIndex, userInput: input });
         break;
-      case 'RUN':
-        dispatch({ type: 'RUN', userInput: input });
+      case 'CONTINUE':
+        dispatch({ type: 'CONTINUE', userInput: input });
         break;
       case 'RESET':
         dispatch({ type: 'RESET' });
@@ -57,9 +50,6 @@ function App() {
         onLineComplete={handleLineComplete}
         onCommand={handleCommand}
         isTyping={state.isTyping}
-        phase={state.phase}
-        playerHealth={state.playerHealth}
-        creatureHealth={state.creatureHealth}
         skipTyping={state.skipTyping}
       />
     </div>

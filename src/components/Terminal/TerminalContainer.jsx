@@ -8,9 +8,6 @@ export function TerminalContainer({
   onLineComplete,
   onCommand,
   isTyping,
-  phase,
-  playerHealth,
-  creatureHealth,
   skipTyping
 }) {
   const [currentInput, setCurrentInput] = useState('');
@@ -49,7 +46,7 @@ export function TerminalContainer({
       } else if (e.key === 'Backspace') {
         e.preventDefault();
         handleKeyPress('BACKSPACE');
-      } else if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
+      } else if (e.key.length === 1 && e.key.match(/[a-z0-9]/i)) {
         e.preventDefault();
         handleKeyPress(e.key.toUpperCase());
       }
