@@ -8,7 +8,13 @@
 export const storyTree = {
   // ─── OPENING ───────────────────────────────────────────────
   start: {
-    text: "You pull the drain plug and watch the cloudy water drop. It stops. The water sits still, a greasy film catching the fluorescent light. Something dark shifts below the surface. You lean closer. A faint clicking sound rises from the pipes.",
+    text: "It's 11:47 PM on a Tuesday. You're standing at the kitchen sink of your third-floor apartment — the one with the window that doesn't lock and the radiator that clangs like someone's trapped inside it. You've been meaning to do these dishes for three days. The water is grey and lukewarm. Something about this apartment has never felt right. The previous tenant left in the middle of the night and didn't take her security deposit. The super just shrugged when you asked about it.",
+    speed: 22,
+    next: "start_2"
+  },
+
+  start_2: {
+    text: "You pull the drain plug and watch the cloudy water drop. It stops. The water sits still, a greasy film catching the fluorescent light. Something dark shifts below the surface. You lean closer. A faint clicking sound rises from the pipes — rhythmic, deliberate, like a fingernail tapping on the inside of a wall.",
     speed: 22,
     choices: [
       { text: "Reach into the drain", next: "reach_in" },
