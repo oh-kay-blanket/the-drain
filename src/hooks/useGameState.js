@@ -21,7 +21,7 @@ function gameReducer(state, action) {
       // Find the last line that actually needs typing (not healthStats, not userInput)
       const lastTypingLine = [...state.outputLines]
         .reverse()
-        .find(line => !line.isHealthStats && !line.isUserInput);
+        .find(line => !line.isHealthStats && !line.isUserInput && !line.isArt);
       const allLinesTyped = action.lineId === lastTypingLine?.id;
       return {
         ...state,
@@ -56,7 +56,7 @@ function gameReducer(state, action) {
       const combatInstructionLine = {
         id: `combat-instruction-${Date.now()}`,
         text: '["fight" to attack or "run" to flee]',
-        speed: 30
+        speed: 18
       };
 
       return {
@@ -83,7 +83,7 @@ function gameReducer(state, action) {
         const instructionLine = {
           id: `instruction-0`,
           text: '[Enter to continue or "skip" to skip]',
-          speed: 30
+          speed: 18
         };
         return {
           ...state,
@@ -109,7 +109,7 @@ function gameReducer(state, action) {
           const combatInstructionLine = {
             id: `combat-instruction-${Date.now()}`,
             text: '["fight" to attack or "run" to flee]',
-            speed: 30
+            speed: 18
           };
           return {
             ...state,
@@ -124,7 +124,7 @@ function gameReducer(state, action) {
         const instructionLine = {
           id: `instruction-${newIndex}`,
           text: '[Enter to continue or "skip" to skip]',
-          speed: 30
+          speed: 18
         };
 
         return {
@@ -170,7 +170,7 @@ function gameReducer(state, action) {
         const resetInstruction = {
           id: `reset-instruction-${Date.now()}`,
           text: '["reset" to play again]',
-          speed: 30
+          speed: 18
         };
         return {
           ...state,
@@ -194,7 +194,7 @@ function gameReducer(state, action) {
         const resetInstruction = {
           id: `reset-instruction-${Date.now()}`,
           text: '["reset" to try again]',
-          speed: 30
+          speed: 18
         };
         return {
           ...state,
@@ -215,7 +215,7 @@ function gameReducer(state, action) {
       const combatInstruction = {
         id: `combat-instruction-${Date.now()}`,
         text: '["fight" to attack or "run" to flee]',
-        speed: 30
+        speed: 18
       };
 
       return {
@@ -243,7 +243,7 @@ function gameReducer(state, action) {
       const resetInstruction = {
         id: `reset-instruction-${Date.now()}`,
         text: '["reset" to play again]',
-        speed: 30
+        speed: 18
       };
 
       return {
@@ -266,7 +266,7 @@ function gameReducer(state, action) {
         outputLines: [...state.outputLines, {
           id: `error-${Date.now()}`,
           text: action.message,
-          speed: 30
+          speed: 18
         }],
         isTyping: true,
         awaitingInput: false
@@ -278,7 +278,7 @@ function gameReducer(state, action) {
         outputLines: [...state.outputLines, {
           id: `help-${Date.now()}`,
           text: action.message,
-          speed: 30
+          speed: 18
         }],
         isTyping: true,
         awaitingInput: false
