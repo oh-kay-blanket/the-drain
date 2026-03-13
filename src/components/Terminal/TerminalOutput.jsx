@@ -41,10 +41,10 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
 
       if (hasNewContent && lines.length !== completedLines.size) {
         // Keep completed lines that still exist in the new set
-        const preservedCompleted = new Set(
-          [...completedLines].filter(id => newIds.has(id))
-        );
-        setCompletedLines(preservedCompleted);
+        // Use functional update to avoid overwriting concurrent child updates
+        setCompletedLines(prev => new Set(
+          [...prev].filter(id => newIds.has(id))
+        ));
       }
 
       lineIdsRef.current = currentLineIds;
