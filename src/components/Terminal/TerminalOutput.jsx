@@ -6,9 +6,9 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
   const outputRef = useRef(null);
   const [completedLines, setCompletedLines] = useState(new Set());
 
-  // Auto-scroll to bottom when new content is added - only during typing
+  // Auto-scroll to bottom when new content is added or input becomes enabled
   useEffect(() => {
-    if (disabled && outputRef.current) {
+    if (outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
     }
   }, [lines, currentInput, completedLines, disabled]);
@@ -68,6 +68,15 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
           );
         }
 
+        // ASCII art line - render instantly with preserved whitespace
+        if (line.isArt) {
+          return (
+            <p key={line.id} className="terminal-line art-line">
+              {line.text}
+            </p>
+          );
+        }
+
         // Health stats line - removed, skip rendering
         if (line.isHealthStats) {
           return null;
@@ -79,7 +88,7 @@ export function TerminalOutput({ lines, onLineComplete, skipTyping, currentInput
         let prevLine = null;
         while (prevLineIndex >= 0) {
           const candidate = lines[prevLineIndex];
-          if (!candidate.isHealthStats && !candidate.isUserInput) {
+          if (!candidate.isHealthStats && !candidate.isUserInput && !candidate.isArt) {
             prevLine = candidate;
             break;
           }
